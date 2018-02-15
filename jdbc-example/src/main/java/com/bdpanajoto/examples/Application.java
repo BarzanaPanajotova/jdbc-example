@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.bdpanajoto.examples.db.DatabaseInterface;
@@ -107,4 +108,36 @@ public class Application {
 		}
 	}
 
+	private enum ProgramOption {
+		USAGE("usage", "Prints usage options."),
+
+		CONFIG_DB_CONN("conn", "Configures DB connection."),
+
+		INIT("init", "Creates initial objects in the database."),
+
+		EXIT("exit", "Terminates the application!"),
+
+		INVALID("invalid", "This is an invalid option!");
+
+		private String name;
+		private String text;
+
+		private ProgramOption(String name, String text) {
+			this.name = name;
+			this.text = text;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public String getText() {
+			return text;
+		}
+
+		public static Optional<ProgramOption> resolve(String str) {
+			return Arrays.asList(ProgramOption.values()).stream()
+					.filter(x -> x.name.equalsIgnoreCase(str) && !x.equals(INVALID)).findFirst();
+		}
+	}
 }
