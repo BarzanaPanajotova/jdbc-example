@@ -69,32 +69,24 @@ public class Application {
 	}
 
 	private static DatabaseInterface initializeDBConnection(BufferedReader reader) throws IOException {
-		DatabaseInterface dbInterface;
-		System.out.println("Enter driver(default:thin):");
-		String driver = reader.readLine();
-		driver = (driver.isEmpty()) ? "thin" : driver;
 
-		System.out.println("Enter server name/address(default:localhost):");
-		String serverName = reader.readLine();
-		serverName = (serverName.isEmpty()) ? "localhost" : serverName;
-
-		System.out.println("Enter db name(default:xe):");
-		String databaseName = reader.readLine();
-		databaseName = (databaseName.isEmpty()) ? "xe" : databaseName;
-
-		System.out.println("Enter port No(default:1521):");
-		String portString = reader.readLine();
+		String driver = parseInput(reader, "Enter driver(default:thin):", "thin");
+		String serverName = parseInput(reader, "Enter server name/address(default:localhost):", "localhost");
+		String databaseName = parseInput(reader, "Enter db name(default:xe):", "xe");
+		String portString = parseInput(reader, "Enter port No(default:1521):", "1521");
 		int port = (portString.isEmpty()) ? 1521 : Integer.parseInt(portString);
+		String username = parseInput(reader, "Enter username:", "");
+		char[] password = parseInput(reader, "Enter password:", "").toCharArray();
 
-		System.out.println("Enter username:");
-		String username = reader.readLine();
-
-		System.out.println("Enter password:");
-		char[] password = reader.readLine().toCharArray();
-
-		dbInterface = DatabaseInterfaces.getSimpleDatabaseInterface(driver, serverName, databaseName, port, username,
+		return DatabaseInterfaces.getSimpleDatabaseInterface(driver, serverName, databaseName, port, username,
 				password);
-		return dbInterface;
+	}
+
+	private static String parseInput(BufferedReader reader, String queryString, String defaultValue)
+			throws IOException {
+		System.out.println(queryString);
+		String input = reader.readLine();
+		return (input.isEmpty()) ? defaultValue : input;
 	}
 
 	private static void initializeDBObjects(BufferedReader reader, DatabaseInterface dbInterface) throws IOException {
