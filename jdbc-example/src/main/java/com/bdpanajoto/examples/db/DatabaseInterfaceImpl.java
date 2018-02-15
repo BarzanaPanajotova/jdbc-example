@@ -4,39 +4,47 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import javax.sql.DataSource;
+
 import oracle.jdbc.pool.OracleDataSource;
 
 public class DatabaseInterfaceImpl implements DatabaseInterface {
 
-	private Connection conn;
+	private DataSource ds;
 
 	public DatabaseInterfaceImpl(String driver, String serverName, String databaseName, int port, String user,
 			char[] password) {
+
 		try {
 			OracleDataSource ds = new OracleDataSource();
 			ds.setDriverType(driver);
 			ds.setServerName(serverName);
 			ds.setDatabaseName(databaseName);
 			ds.setPortNumber(port);
+			ds.setUser(user);
+			ds.setPassword(String.copyValueOf(password));
+			this.ds = ds;
 
-			conn = ds.getConnection(user, String.copyValueOf(password));
-
-			System.out.println("Connected to: " + serverName + ":" + port + "/" + databaseName);
+			try (Connection conn = ds.getConnection()) {
+				System.out.println(
+						"Connection to : " + serverName + ":" + port + "/" + databaseName + " tested successfully");
+			}
 		} catch (SQLException e) {
 			System.out.println(e.getLocalizedMessage());
 		}
+
 	}
 
 	@Override
 	public boolean executeSQL(String sql) {
-		boolean result = false;
-		try {
+		try (Connection conn = ds.getConnection()) {
 			PreparedStatement psmt = conn.prepareStatement(sql);
-			result = psmt.executeUpdate() == 0;
+			return psmt.executeUpdate() == 0;
 		} catch (SQLException e) {
 			System.out.println(e.getLocalizedMessage());
 		}
-		return result;
+
+		return false;
 	}
 
 }

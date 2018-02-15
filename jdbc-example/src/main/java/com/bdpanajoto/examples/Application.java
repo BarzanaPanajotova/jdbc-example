@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.bdpanajoto.examples.db.DatabaseInterface;
@@ -27,25 +26,25 @@ public class Application {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
 			DatabaseInterface dbInterface = null;
 			while (true) {
-				String str = reader.readLine();
-				if (!str.isEmpty()) {
-					ProgramOption option = ProgramOption.resolve(str).orElse(ProgramOption.INVALID);
+				String optionStr = reader.readLine();
+				ProgramOption option = ProgramOption.resolve(optionStr);
 
-					switch (option) {
-					case USAGE:
-						printOptions();
-						break;
-					case EXIT:
-						exit();
-						break;
-					case CONFIG_DB_CONN:
-						dbInterface = initializeDBConnection(reader);
-						break;
-					case INIT:
-						initializeDBObjects(reader, dbInterface);
-						break;
-					default:
-						System.out.println(str + " is not a valid option!\n");
+				switch (option) {
+				case USAGE:
+					printOptions();
+					break;
+				case EXIT:
+					exit();
+					break;
+				case CONFIG_DB_CONN:
+					dbInterface = initializeDBConnection(reader);
+					break;
+				case INIT:
+					initializeDBObjects(reader, dbInterface);
+					break;
+				default:
+					if (!optionStr.isEmpty()) {
+						System.out.println(optionStr + " is not a valid option!\n");
 						printOptions();
 					}
 				}
@@ -55,9 +54,13 @@ public class Application {
 
 	private static void printOptions() {
 		System.out.println("Valid program options are:\n");
-		Consumer<ProgramOption> printFormatedOption = opt -> System.out.println(opt.getName() + "   " + opt.getText());
-		Arrays.asList(ProgramOption.values()).stream().filter(x -> !x.equals(ProgramOption.INVALID))
-				.forEach(printFormatedOption);
+		Consumer<ProgramOption> printOptionInfo = opt -> System.out.println(opt.getName() + "   " + opt.getText());
+
+		Arrays.asList(ProgramOption.values()).stream()
+
+				.filter(x -> !x.equals(ProgramOption.INVALID))
+
+				.forEach(printOptionInfo);
 	}
 
 	private static void exit() {
@@ -135,9 +138,9 @@ public class Application {
 			return text;
 		}
 
-		public static Optional<ProgramOption> resolve(String str) {
-			return Arrays.asList(ProgramOption.values()).stream()
-					.filter(x -> x.name.equalsIgnoreCase(str) && !x.equals(INVALID)).findFirst();
+		public static ProgramOption resolve(String str) {
+			return Arrays.asList(ProgramOption.values()).stream().filter(x -> x.name.equalsIgnoreCase(str)).findFirst()
+					.orElse(INVALID);
 		}
 	}
 }
