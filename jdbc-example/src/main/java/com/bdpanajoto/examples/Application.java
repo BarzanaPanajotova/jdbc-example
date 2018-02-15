@@ -74,7 +74,7 @@ public class Application {
 		String serverName = parseInput(reader, "Enter server name/address(default:localhost):", "localhost");
 		String databaseName = parseInput(reader, "Enter db name(default:xe):", "xe");
 		String portString = parseInput(reader, "Enter port No(default:1521):", "1521");
-		int port = (portString.isEmpty()) ? 1521 : Integer.parseInt(portString);
+		int port = Integer.parseInt(portString);
 		String username = parseInput(reader, "Enter username:", "");
 		char[] password = parseInput(reader, "Enter password:", "").toCharArray();
 
