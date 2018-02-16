@@ -40,8 +40,7 @@ public class DatabaseInterfaceImpl implements DatabaseInterface {
 	@Override
 	public void executeSQL(String sql) {
 		System.out.println("Executing: " + sql);
-		try (Connection conn = ds.getConnection()) {
-			PreparedStatement psmt = conn.prepareStatement(sql);
+		try (Connection conn = ds.getConnection(); PreparedStatement psmt = conn.prepareStatement(sql)) {
 			psmt.executeUpdate();
 			psmt.close();
 		} catch (SQLException e) {
@@ -51,8 +50,7 @@ public class DatabaseInterfaceImpl implements DatabaseInterface {
 
 	@Override
 	public void executeBatchSQL(List<String> sqlList) {
-		try (Connection conn = ds.getConnection()) {
-			Statement smt = conn.createStatement();
+		try (Connection conn = ds.getConnection(); Statement smt = conn.createStatement()) {
 			conn.setAutoCommit(false);
 			for (String sql : sqlList) {
 				System.out.println("Adding to batch executor: " + sql);
