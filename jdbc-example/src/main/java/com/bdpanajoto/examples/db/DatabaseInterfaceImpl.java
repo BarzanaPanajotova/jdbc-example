@@ -43,6 +43,7 @@ public class DatabaseInterfaceImpl implements DatabaseInterface {
 		try (Connection conn = ds.getConnection()) {
 			PreparedStatement psmt = conn.prepareStatement(sql);
 			psmt.executeUpdate();
+			psmt.close();
 		} catch (SQLException e) {
 			System.out.println(e.getLocalizedMessage());
 		}
