@@ -16,11 +16,11 @@ import com.bdpanajoto.examples.dto.EmployeeDTO;
 
 import oracle.jdbc.pool.OracleDataSource;
 
-public class DatabaseInterfaceImpl implements DatabaseInterface {
+public class OracleDatabaseInterfaceImpl implements DatabaseInterface {
 
 	private DataSource ds;
 
-	DatabaseInterfaceImpl(String driver, String serverName, String databaseName, int port, String user,
+	OracleDatabaseInterfaceImpl(String driver, String serverName, String databaseName, int port, String user,
 			char[] password) {
 
 		try {

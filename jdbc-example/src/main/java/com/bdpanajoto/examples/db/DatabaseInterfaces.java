@@ -4,6 +4,6 @@ public final class DatabaseInterfaces {
 
 	public static DatabaseInterface getSimpleDatabaseInterface(String driver, String serverName, String databaseName,
 			int port, String user, char[] password) {
-		return new DatabaseInterfaceImpl(driver, serverName, databaseName, port, user, password);
+		return new OracleDatabaseInterfaceImpl(driver, serverName, databaseName, port, user, password);
 	}
 }
