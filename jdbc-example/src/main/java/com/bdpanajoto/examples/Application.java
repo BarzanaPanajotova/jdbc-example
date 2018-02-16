@@ -5,16 +5,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.MessageFormat;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
-
-import com.bdpanajoto.examples.db.DatabaseInterface;
-import com.bdpanajoto.examples.db.DatabaseInterfaces;
-import com.bdpanajoto.examples.db.initialize.SetupDatabase;
-import com.bdpanajoto.examples.dto.EmployeeDTO;
 
 public class Application {
 
+	private static final String GOODBYE = "Goodbye!";
+	private static final String INTRO_MSG = "\nPlease setup a db connection!";
 	private static final String Y = "y";
 	private static final String EMPTY_STRING = "";
 	private static final String DEFAULT_PORT = "1521";
@@ -29,7 +26,6 @@ public class Application {
 	private static final String ENTER_DRIVER_MSG = "Enter driver(default:thin):";
 	private static final String NOT_A_VALID_OPTION_MSG = "{0} is not a valid option!\n";
 	private static final String VALID_PROGRAM_OPTIONS_MSG = "Valid program options are:\n";
-	private static final String THERE_IS_NO_CONNECTION_MSG = "There is no connection to a db!";
 	private static final String NOT_EXECUTING_INIT_MSG = "Not executing init!";
 	private static final String ARE_YOU_SURE_MSG = "Are you sure you want to initalize(existing objects in the db schema will be dropped!)? Y/N";
 
@@ -56,7 +52,13 @@ public class Application {
 
 	private static void handleInput() throws IOException {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
-			DatabaseInterface dbInterface = null;
+			System.out.println(INTRO_MSG);
+			EmployeesApplication employeesApplication = null;
+
+			while (Objects.isNull(employeesApplication)) {
+				employeesApplication = getNewEmployeeApplication(reader);
+			}
+
 			while (true) {
 				String optionStr = reader.readLine();
 				ProgramOption option = ProgramOption.resolve(optionStr);
@@ -69,13 +71,13 @@ public class Application {
 					exit();
 					break;
 				case CONFIG_DB_CONN:
-					dbInterface = initializeDBConnection(reader);
+					employeesApplication = getNewEmployeeApplication(reader);
 					break;
 				case INIT:
-					initializeDBObjects(reader, dbInterface);
+					initialDBSetup(reader, employeesApplication);
 					break;
 				case GET_EMPLOYEES:
-					getEmployees(dbInterface);
+					employeesApplication.listEmployees();
 					break;
 				default:
 					if (!optionStr.isEmpty()) {
@@ -87,21 +89,12 @@ public class Application {
 		}
 	}
 
-	private static void getEmployees(DatabaseInterface dbInterface) {
-		if (dbInterface != null) {
-			List<EmployeeDTO> employees = dbInterface.getEmployees();
-			employees.forEach(System.out::println);
-		} else {
-			System.out.println(THERE_IS_NO_CONNECTION_MSG);
-		}
-	}
-
 	private static void exit() {
-		System.out.println("Goodbye!");
+		System.out.println(GOODBYE);
 		System.exit(0);
 	}
 
-	private static DatabaseInterface initializeDBConnection(BufferedReader reader) throws IOException {
+	private static EmployeesApplication getNewEmployeeApplication(BufferedReader reader) throws IOException {
 		String driver = parseDBConnectionInput(reader, ENTER_DRIVER_MSG, DEFAULT_DRIVER);
 		String serverName = parseDBConnectionInput(reader, ENTER_SERVER_NAME_MSG, DEFAULT_SERVER);
 		String databaseName = parseDBConnectionInput(reader, ENTER_DB_NAME_MSG, DEFAULT_DB_NAME);
@@ -110,8 +103,7 @@ public class Application {
 		String username = parseDBConnectionInput(reader, ENTER_USERNAME_MSG, EMPTY_STRING);
 		char[] password = parseDBConnectionInput(reader, ENTER_PASSWORD_MSG, EMPTY_STRING).toCharArray();
 
-		return DatabaseInterfaces.getSimpleDatabaseInterface(driver, serverName, databaseName, port, username,
-				password);
+		return EmployeesApplication.createInstance(driver, serverName, databaseName, port, username, password);
 	}
 
 	private static String parseDBConnectionInput(BufferedReader reader, String queryString, String defaultValue)
@@ -121,16 +113,13 @@ public class Application {
 		return (input.isEmpty()) ? defaultValue : input;
 	}
 
-	private static void initializeDBObjects(BufferedReader reader, DatabaseInterface dbInterface) throws IOException {
-		if (dbInterface != null) {
-			System.out.println(ARE_YOU_SURE_MSG);
-			if (Y.equalsIgnoreCase(reader.readLine())) {
-				SetupDatabase.init(dbInterface);
-			} else {
-				System.out.println(NOT_EXECUTING_INIT_MSG);
-			}
+	private static void initialDBSetup(BufferedReader reader, EmployeesApplication employeesApplication)
+			throws IOException {
+		System.out.println(ARE_YOU_SURE_MSG);
+		if (Y.equalsIgnoreCase(reader.readLine())) {
+			employeesApplication.initialSetup();
 		} else {
-			System.out.println(THERE_IS_NO_CONNECTION_MSG);
+			System.out.println(NOT_EXECUTING_INIT_MSG);
 		}
 	}
 
