@@ -2,6 +2,8 @@ package com.bdpanajoto.examples.db;
 
 import java.util.List;
 
+import com.bdpanajoto.examples.dto.EmployeeDTO;
+
 public interface DatabaseInterface {
 
 	/**
@@ -19,4 +21,11 @@ public interface DatabaseInterface {
 	 * @param sqlList
 	 */
 	void executeBatchSQL(List<String> sqlList);
+
+	/**
+	 * Queries the db for a list of employees.
+	 * 
+	 * @return a list of existing Employees or an empty List.
+	 */
+	List<EmployeeDTO> getEmployees();
 }

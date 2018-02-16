@@ -5,15 +5,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 
 import com.bdpanajoto.examples.db.DatabaseInterface;
 import com.bdpanajoto.examples.db.DatabaseInterfaces;
 import com.bdpanajoto.examples.db.initialize.SetupDatabase;
+import com.bdpanajoto.examples.dto.EmployeeDTO;
 
 public class Application {
 
-	
 	private static final String Y = "y";
 	private static final String EMPTY_STRING = "";
 	private static final String DEFAULT_PORT = "1521";
@@ -31,7 +32,6 @@ public class Application {
 	private static final String THERE_IS_NO_CONNECTION_MSG = "There is no connection to a db!";
 	private static final String NOT_EXECUTING_INIT_MSG = "Not executing init!";
 	private static final String ARE_YOU_SURE_MSG = "Are you sure you want to initalize(existing objects in the db schema will be dropped!)? Y/N";
-	
 
 	public static void main(String[] args) throws IOException {
 		init();
@@ -74,6 +74,9 @@ public class Application {
 				case INIT:
 					initializeDBObjects(reader, dbInterface);
 					break;
+				case GET_EMPLOYEES:
+					getEmployees(dbInterface);
+					break;
 				default:
 					if (!optionStr.isEmpty()) {
 						System.out.println(MessageFormat.format(NOT_A_VALID_OPTION_MSG, optionStr));
@@ -81,6 +84,15 @@ public class Application {
 					}
 				}
 			}
+		}
+	}
+
+	private static void getEmployees(DatabaseInterface dbInterface) {
+		if (dbInterface != null) {
+			List<EmployeeDTO> employees = dbInterface.getEmployees();
+			employees.forEach(System.out::println);
+		} else {
+			System.out.println(THERE_IS_NO_CONNECTION_MSG);
 		}
 	}
 
@@ -131,7 +143,9 @@ public class Application {
 
 		EXIT("exit", "Terminates the application!"),
 
-		INVALID("invalid", "This is an invalid option!");
+		INVALID("invalid", "This is an invalid option!"),
+
+		GET_EMPLOYEES("employees", "Displays data for all employees availavle in employee DB.");
 
 		private String name;
 		private String text;
