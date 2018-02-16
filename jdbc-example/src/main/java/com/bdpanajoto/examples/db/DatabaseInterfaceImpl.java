@@ -36,16 +36,13 @@ public class DatabaseInterfaceImpl implements DatabaseInterface {
 	}
 
 	@Override
-	public int executeSQL(String sql) {
+	public void executeSQL(String sql) {
 		System.out.println("Executing: " + sql);
 		try (Connection conn = ds.getConnection()) {
 			PreparedStatement psmt = conn.prepareStatement(sql);
-			return psmt.executeUpdate();
+			psmt.executeUpdate();
 		} catch (SQLException e) {
 			System.out.println(e.getLocalizedMessage());
 		}
-
-		return 0;
 	}
-
 }
