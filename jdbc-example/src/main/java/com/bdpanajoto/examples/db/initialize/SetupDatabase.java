@@ -1,5 +1,8 @@
 package com.bdpanajoto.examples.db.initialize;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.bdpanajoto.examples.db.DatabaseInterface;
 
 public final class SetupDatabase {
@@ -31,11 +34,13 @@ public final class SetupDatabase {
 		db.executeSQL("CREATE TABLE department (id NUMBER CONSTRAINT department_pk PRIMARY KEY,"
 				+ "name VARCHAR2(50),location VARCHAR2(50))");
 
-		db.executeSQL("INSERT INTO department VALUES (1,'Business','London')");
-		db.executeSQL("INSERT INTO department VALUES (2,'IT','India')");
-		db.executeSQL("INSERT INTO department VALUES (3,'Sales','New York')");
-		db.executeSQL("INSERT INTO department VALUES (4,'Operations','New York')");
-		db.executeSQL("INSERT INTO department VALUES (5,'IT','Bulgaria')");
+		List<String> sqlList = new ArrayList<>();
+		sqlList.add("INSERT INTO department VALUES (1,'Business','London')");
+		sqlList.add("INSERT INTO department VALUES (2,'IT','India')");
+		sqlList.add("INSERT INTO department VALUES (3,'Sales','New York')");
+		sqlList.add("INSERT INTO department VALUES (4,'Operations','New York')");
+		sqlList.add("INSERT INTO department VALUES (5,'IT','Bulgaria')");
+		db.executeBatchSQL(sqlList);
 	}
 
 	private static void initEmp(DatabaseInterface db) {
@@ -43,31 +48,34 @@ public final class SetupDatabase {
 				+ "job VARCHAR2(50)," + "manager_id NUMBER," + "hiredate DATE," + "salary NUMBER(7,2),"
 				+ "department_id NUMBER CONSTRAINT department_fk REFERENCES department)");
 
-		db.executeSQL(
+		List<String> sqlList = new ArrayList<>();
+		sqlList.add(
 				"INSERT INTO employee VALUES (1,'John Stein','Manager',NULL,to_date('17-12-1980','dd-mm-yyyy'),5000,1)");
-		db.executeSQL(
+		sqlList.add(
 				"INSERT INTO employee VALUES (2,'Viktor Frankel','Salesman',1,to_date('20-2-1981','dd-mm-yyyy'),1600,3)");
-		db.executeSQL(
+		sqlList.add(
 				"INSERT INTO employee VALUES (3,'Sessilia Smith','Salesman',1,to_date('22-2-1981','dd-mm-yyyy'),1250,3)");
-		db.executeSQL(
+		sqlList.add(
 				"INSERT INTO employee VALUES (4,'John Doe','Manager',NULL,to_date('2-4-1981','dd-mm-yyyy'),2975,1)");
-		db.executeSQL(
+		sqlList.add(
 				"INSERT INTO employee VALUES (5,'Peter Liskowitz','Programmer',4,to_date('28-9-1981','dd-mm-yyyy'),1250,2)");
-		db.executeSQL(
+		sqlList.add(
 				"INSERT INTO employee VALUES (6,'Daniel Radclif','Clerk',4,to_date('1-5-1981','dd-mm-yyyy'),2850,4)");
-		db.executeSQL(
+		sqlList.add(
 				"INSERT INTO employee VALUES (7,'Maria Sharapova','Clerk',1,to_date('9-6-1981','dd-mm-yyyy'),2450,4)");
-		db.executeSQL("INSERT INTO employee VALUES (8,'Albert Einstein','Analyst',1,to_date('9-6-2006','dd-mm-yyyy'),3000,1)");
-		db.executeSQL(
+		sqlList.add(
+				"INSERT INTO employee VALUES (8,'Albert Einstein','Analyst',1,to_date('9-6-2006','dd-mm-yyyy'),3000,1)");
+		sqlList.add(
 				"INSERT INTO employee VALUES (9,'Manoj Dutta','Programmer',1,to_date('17-11-1981','dd-mm-yyyy'),500,2)");
-		db.executeSQL(
+		sqlList.add(
 				"INSERT INTO employee VALUES (10,'Debasissa Gupta','Programmer',1,to_date('8-9-1981','dd-mm-yyyy'),1500,2)");
-		db.executeSQL("INSERT INTO employee VALUES (11,'Victor Adams','Clerk',1,to_date('30-3-2016','dd-mm-yyyy'),1100,4)");
-		db.executeSQL(
+		sqlList.add(
+				"INSERT INTO employee VALUES (11,'Victor Adams','Clerk',1,to_date('30-3-2016','dd-mm-yyyy'),1100,4)");
+		sqlList.add(
 				"INSERT INTO employee VALUES (12,'Barzana Panayotova','Programmer',4,to_date('3-12-2016','dd-mm-yyyy'),950,5)");
-		db.executeSQL(
+		sqlList.add(
 				"INSERT INTO employee VALUES (13,'Debora Styles','Analyst',4,to_date('3-12-1981','dd-mm-yyyy'),3000,1)");
-		db.executeSQL(
-				"INSERT INTO employee VALUES (14,'Mark Twain','Clerk',1,to_date('23-1-1982','dd-mm-yyyy'),1300,4)");
+		sqlList.add("INSERT INTO employee VALUES (14,'Mark Twain','Clerk',1,to_date('23-1-1982','dd-mm-yyyy'),1300,4)");
+		db.executeBatchSQL(sqlList);
 	}
 }

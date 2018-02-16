@@ -3,6 +3,8 @@ package com.bdpanajoto.examples.db;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -12,7 +14,7 @@ public class DatabaseInterfaceImpl implements DatabaseInterface {
 
 	private DataSource ds;
 
-	public DatabaseInterfaceImpl(String driver, String serverName, String databaseName, int port, String user,
+	DatabaseInterfaceImpl(String driver, String serverName, String databaseName, int port, String user,
 			char[] password) {
 
 		try {
@@ -41,6 +43,23 @@ public class DatabaseInterfaceImpl implements DatabaseInterface {
 		try (Connection conn = ds.getConnection()) {
 			PreparedStatement psmt = conn.prepareStatement(sql);
 			psmt.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println(e.getLocalizedMessage());
+		}
+	}
+
+	@Override
+	public void executeBatchSQL(List<String> sqlList) {
+		try (Connection conn = ds.getConnection()) {
+			Statement smt = conn.createStatement();
+			conn.setAutoCommit(false);
+			for (String sql : sqlList) {
+				System.out.println("Adding to batch executor: " + sql);
+				smt.addBatch(sql);
+			}
+			smt.executeBatch();
+			conn.commit();
+			System.out.println("Batch executed!");
 		} catch (SQLException e) {
 			System.out.println(e.getLocalizedMessage());
 		}
